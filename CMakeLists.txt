@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.18)
+project(tar2tar)
+add_executable(tar2index tar2index.c tarhelpers.h)
+add_executable(tar2tar tar2tar.c tarhelpers.h)
+target_compile_options(tar2index PRIVATE -Wall -Wextra -Wno-parentheses)
+target_compile_options(tar2tar PRIVATE -Wall -Wextra -Wno-parentheses)
+install(TARGETS tar2index tar2tar)

@@ -1,0 +1,15 @@
+tar2tar - create index files for tar and use them for fast partial extraction
+
+- Install -
+	cmake -B build
+	cmake --build build
+	sudo cmake --install build
+
+- Example use -
+	tar2index blah.tar > blah.index
+	grep pattern blah.index | tar2tar blah.tar | tar -x
+
+- References -
+https://github.com/libarchive/libarchive/blob/master/contrib/untar.c
+https://pubs.opengroup.org/onlinepubs/9699919799/utilities/pax.html
+https://www.gnu.org/software/tar/manual/html_node/Extensions.html
