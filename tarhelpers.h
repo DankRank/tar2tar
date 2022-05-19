@@ -27,7 +27,7 @@ inline static long get_size(const char *buf)
 {
 	int i;
 	long size = 0;
-	if (buf[156] >= '1' || buf[156] <= '6') {
+	if (buf[156] < '1' || buf[156] > '6') {
 		if (buf[124] == '\x80') {
 			for (i = 125; i < 136; i++)
 				size = size<<8 | (unsigned char)buf[i];
@@ -41,6 +41,7 @@ inline static long get_size(const char *buf)
 	return (size+511)/512*512;
 }
 #define is_ustar(buf) (!memcmp(&(buf)[257], "ustar\0""00", 8))
+#define is_extended_type(t) ((t) == 'L' || (t) == 'K' || (t) == 'x' || (t) == 'g' || (t) == 'X')
 inline static int read_fully(int fd, void *buf, int len) {
 	int nread = read(fd, buf, len);
 	if (nread != len) {

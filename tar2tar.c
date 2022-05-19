@@ -10,6 +10,7 @@ int main(int argc, char *argv[])
 	char buf[8192];
 	int fd;
 	long size;
+	int is_extended;
 
 	if (argc != 2) {
 		fprintf(stderr, "Usage: %s [archive]\n", argv[0]);
@@ -26,30 +27,33 @@ int main(int argc, char *argv[])
 			perror("lseek");
 			return 1;
 		}
-		if (read_fully(fd, buf, 512))
-			return 1;
+		do {
+			if (read_fully(fd, buf, 512))
+				return 1;
 
-		switch (check_checksum(buf)) {
-		case 1:
-			fprintf(stderr, "checksum error\n");
-			return 1;
-		case 2:
-			memset(buf, 0, 1024);
-			if (write_fully(STDOUT_FILENO, buf, 1024))
+			switch (check_checksum(buf)) {
+			case 1:
+				fprintf(stderr, "checksum error\n");
 				return 1;
-			return 0;
-		}
+			case 2:
+				memset(buf, 0, 1024);
+				if (write_fully(STDOUT_FILENO, buf, 1024))
+					return 1;
+				return 0;
+			}
 
-		if (write_fully(STDOUT_FILENO, buf, 512))
-			return 1;
-		size = get_size(buf);
-		while (size) {
-			int toread = size > 8192 ? 8192 : size;
-			if (read_fully(fd, buf, toread))
+			is_extended = is_extended_type(buf[156]);
+			if (write_fully(STDOUT_FILENO, buf, 512))
 				return 1;
-			if (write_fully(STDOUT_FILENO, buf, toread))
-				return 1;
-			size -= toread;
-		}
+			size = get_size(buf);
+			while (size) {
+				int toread = size > 8192 ? 8192 : size;
+				if (read_fully(fd, buf, toread))
+					return 1;
+				if (write_fully(STDOUT_FILENO, buf, toread))
+					return 1;
+				size -= toread;
+			}
+		} while (is_extended);
 	}
 }

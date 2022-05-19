@@ -9,6 +9,10 @@ tar2tar - create index files for tar and use them for fast partial extraction
 	tar2index blah.tar > blah.index
 	grep pattern blah.index | tar2tar blah.tar | tar -x
 
+Alternatively create a script like this and copy-paste lines from the index:
+	tar2tar /media/backups/blah.tar <<EOF | tar -x
+	EOF
+
 - References -
 https://github.com/libarchive/libarchive/blob/master/contrib/untar.c
 https://pubs.opengroup.org/onlinepubs/9699919799/utilities/pax.html
