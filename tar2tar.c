@@ -36,10 +36,8 @@ int main(int argc, char *argv[])
 				fprintf(stderr, "checksum error\n");
 				return 1;
 			case 2:
-				memset(buf, 0, 1024);
-				if (write_fully(STDOUT_FILENO, buf, 1024))
-					return 1;
-				return 0;
+				fprintf(stderr, "unexpected end of archive\n");
+				return 1;
 			}
 
 			is_extended = is_extended_type(buf[156]);
@@ -56,4 +54,7 @@ int main(int argc, char *argv[])
 			}
 		} while (is_extended);
 	}
+	memset(buf, 0, 1024);
+	if (write_fully(STDOUT_FILENO, buf, 1024))
+		return 1;
 }
