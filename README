@@ -13,6 +13,21 @@ Alternatively create a script like this and copy-paste lines from the index:
 	tar2tar /media/backups/blah.tar <<EOF | tar -x
 	EOF
 
+- GNU tar -R -
+If you have GNU tar, you can use the -R flag instead of tar2index:
+	tar -tRf x.tar | awk '{ sub(/^block /,""); $1 *= 512; print }' >x.index
+This could be used to make an index as you're creating the archive:
+	tar -cvRf file.tar dir | awk ... >file.index
+Note that for -c mode you must use -v, and also (if you use --transform or
+have filenames starting with /) use --show-transformed-names, if you want the
+filename to match the ones stored in the archive. Also note that in -t mode
+there will be an extra line at the end for the NUL blocks.
+	$ tar -cvR /dev/null 2> >(sed 's/^/1:/' >&2) | tar -tR | sed 's/^/2:/'
+	1:tar: Removing leading `/' from member names
+	1:block 0: /dev/null
+	2:block 0: dev/null
+	2:block 1: ** Block of NULs **
+
 - References -
 https://github.com/libarchive/libarchive/blob/master/contrib/untar.c
 https://pubs.opengroup.org/onlinepubs/9699919799/utilities/pax.html
